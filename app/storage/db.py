@@ -1,3 +1,4 @@
+from datetime import datetime
 import sqlite3
 import pandas as pd
 
@@ -12,7 +13,7 @@ def init_db():
     cur.execute(
         '''
             CREATE TABLE IF NOT EXISTS klines (
-                timestamp DATETIME PRIMARY KEY,
+                timestamp TEXT,
                 open REAL, 
                 high REAL,
                 low REAL,
@@ -34,7 +35,7 @@ def save_klines(df: pd.DataFrame):
             '''
             INSERT OR IGNORE INTO klines(timestamp, open, high, low, close, volume) VALUES (?,?,?,?,?,?)
             ''',
-            (index, row['open'], row['high'], row['low'], row['close'], row['volume'])
+            (str(index), row['open'], row['high'], row['low'], row['close'], row['volume'])
         )
     
     con.commit()
