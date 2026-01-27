@@ -1,23 +1,29 @@
 # DEVLOG
 
-## [2026-01-24] Initialisation & Ingestion Binance
+## [2026-01-24] Initialization & Binance Ingestion
 
-### Réalisé
-- Mise en place de la structure du projet (directives, app, storage).
-- Implémentation du client d'ingestion Binance (`app/ingestion/binance_client.py`).
-- Utilisation de `pandas` pour transformer les listes brutes en DataFrame typé et indexé.
-- Merge de la feature `ingestion-binance` sur `main`.
+### Achieved
+- Set up project structure (directives, app, storage).
+- Implemented Binance ingestion client (`app/ingestion/binance_client.py`).
+- Used `pandas` to transform raw lists into a typed and indexed DataFrame.
+- Merged `ingestion-binance` feature into `main`.
 
-### Appris
-- **Pandas** : `iloc` pour le slicing, `to_datetime` avec `unit='ms'`, et `set_index`.
-- **Git** : Gestion des branches (divergence local/remote réparée avec `pull --no-rebase`).
-- **SQLite** : Distinction entre `Connection` (l'autoroute) et `Cursor` (le camion/magasinier).
-- **Architecture** : Ne JAMAIS fermer la connexion (`con.close()`) à l'intérieur d'une boucle d'insertion qui réutilise le curseur.
+### Learned
+- **Pandas**: `iloc` for slicing, `to_datetime` with `unit='ms'`, and `set_index`.
+- **Git**: Branch management (fixed local/remote divergence with `pull --no-rebase`).
+- **SQLite**: Distinction between `Connection` (the highway) and `Cursor` (the truck/storekeeper).
+- **Architecture**: NEVER close the connection (`con.close()`) inside an insertion loop that reuses the cursor.
 
-## [2026-01-26] Stockage SQLite
+## [2026-01-26] SQLite Storage
 
-### Réalisé
-- Implémentation de `app/storage/db.py`.
-- Création de la table `klines` avec `init_db`.
-- Fonction `save_klines` avec gestion des doublons (`INSERT OR IGNORE`).
+### Achieved
+- implemented `app/storage/db.py`.
+- Created `klines` table with `init_db`.
+- `save_klines` function with duplicate handling (`INSERT OR IGNORE`).
 
+### Learned
+- **Pandas Index**: Warning, `set_index("timestamp")` removes the `timestamp` column from the data (`row`). Must use the `index` variable in the iteration (`iterrows`).
+- **SQLite Typing**: SQLite is permissive but the Python `sqlite3` driver does not know how to convert a `pandas.Timestamp` object.
+    - *Error*: `InterfaceError: Error binding parameter...`
+    - *Fix*: Explicitly convert: `str(index)`.
+- **SQL**: `INSERT OR IGNORE` makes the script idempotent (re-runnable without unique constraint errors).
